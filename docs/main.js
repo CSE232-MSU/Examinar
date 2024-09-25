@@ -118,7 +118,8 @@ async function extractQuestionsFromPDF(url) {
 
     lines.forEach(line => {
         let trimmedLine = line.trim();
-
+        trimmedLine = trimmedLine.replace(/Version\s+[A-Za-z]\s+Page\s+\d+\s+of\s+\d+/, "")
+        trimmedLine = trimmedLine.replace("This page intentionally left blank.", "")
         // Question
         if (/^\d+\.\s/.test(trimmedLine)) {
             if (currentType.length > 0) {
