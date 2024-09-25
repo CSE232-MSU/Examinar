@@ -127,7 +127,7 @@ async function extractQuestionsFromPDF(url) {
                 // Clean up hyphenated text
                 currentQuestion.question = currentQuestion.question.replace(hyphenRegex, '$1$2').trim();
                 currentQuestion.options.forEach((option, index) => {
-                    currentQuestion.options[index] = option.replace(hyphenRegex, '$1$2').trim();
+                    currentQuestion.options[index] = option.replace(/Version\s+[A-Za-z]\s+Page\s+\d+\s+of\s+\d+/, "").replace(hyphenRegex, '$1$2').trim();
                 })
 
                 currentQuestion.question = createMarkdownWithCodeBlock(currentQuestion.question.replace(/\s+/g, ' ').trim());
