@@ -184,9 +184,7 @@
         }
 
         function updateUrlWithQuestionNumber() {
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('q', currentQuestionIndex + 1);
-            window.history.pushState(null, '', newUrl); // This updates the URL without reloading the page
+            window.history.pushState({}, '', `?pdf=${params['pdf']}&q=${currentQuestionIndex + 1}`); // This updates the URL without reloading the page
         }
 
         function nextQuestion() {
