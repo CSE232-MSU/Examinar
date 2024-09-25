@@ -183,11 +183,18 @@
             }
         }
 
+        function updateUrlWithQuestionNumber() {
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('q', currentQuestionIndex + 1);
+            window.history.pushState(null, '', newUrl); // This updates the URL without reloading the page
+        }
+
         function nextQuestion() {
             currentQuestionIndex++;
             if (currentQuestionIndex < questionAnswerPairs.length) {
                 selectedAnswer = null; // Reset selected answer for the next question
                 renderQuestion();
+                updateUrlWithQuestionNumber(); // Update URL
             } else {
                 feedbackMessage.textContent = 'You have completed all the questions!';
                 feedbackMessage.classList.remove('text-red-500', 'text-green-500');
@@ -202,6 +209,7 @@
             if (currentQuestionIndex >= 0) {
                 selectedAnswer = null; // Reset selected answer for the previous question
                 renderQuestion();
+                updateUrlWithQuestionNumber(); // Update URL
             }
         }
 
@@ -209,6 +217,7 @@
             currentQuestionIndex = index;
             selectedAnswer = null; // Reset selected answer when jumping
             renderQuestion();
+            updateUrlWithQuestionNumber(); // Update URL
         }
 
         createNavButtons();
