@@ -1,6 +1,6 @@
 const fs = require('fs');
 import pdf from 'pdf-parse';
-const PDFJS = require('../public/pdf.js/build/pdf.js')
+const PDFJS = require('../docs/pdf.js/build/pdf.js')
 
 // Function to create Markdown with code blocks
 function createMarkdownWithCodeBlock(input) {
