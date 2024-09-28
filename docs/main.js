@@ -1,4 +1,3 @@
-
 // Async function to format code using clang-format
 function beautifyCode(code) {
     //const formattedCode = await clang.format(code, { style: 'Google' }); // You can change the style to LLVM, Mozilla, etc.
@@ -24,6 +23,7 @@ function render_page(pageData) {
 
     return pageData.getTextContent(render_options)
         .then(function(textContent) {
+            console.log(textContent)
             let lastY, text = '';
             //https://github.com/mozilla/pdf.js/issues/8963
             //https://github.com/mozilla/pdf.js/issues/2140
@@ -62,7 +62,6 @@ async function parsePDF(dataBuffer) {
     const doc = await loadingTask.promise;
     const counter = doc.numPages;
     let text = '';
-
     for (let i = 1; i <= counter; i++) {
         let page = await doc.getPage(i);
         text += `\n\n${await render_page(page)}`;
@@ -113,9 +112,6 @@ async function extractQuestionsFromPDF(url) {
     const lines = text.split('\n');
     let currentType = "";
 
-    // Set the title of the doc
-    document.getElementById("title").innerText = title;
-
     lines.forEach(line => {
         let trimmedLine = line.trim();
         trimmedLine = trimmedLine.replace(/Version\s+[A-Za-z]\s+Page\s+\d+\s+of\s+\d+/, "")
@@ -159,9 +155,20 @@ async function extractQuestionsFromPDF(url) {
     // Push the last question if it exists
     if (currentQuestion) {
         currentQuestion.question = currentQuestion.question.trim();
+        // Clean up hyphenated text
+        currentQuestion.question = currentQuestion.question.replace(hyphenRegex, '$1$2').trim();
+        currentQuestion.options.forEach((option, index) => {
+            currentQuestion.options[index] = option.replace(/Version\s+[A-Za-z]\s+Page\s+\d+\s+of\s+\d+/, "").replace(hyphenRegex, '$1$2').trim();
+        })
+
+        currentQuestion.question = createMarkdownWithCodeBlock(currentQuestion.question.replace(/\s+/g, ' ').trim());
         questions.push(currentQuestion);
+        currentQuestion = {
+            question: "",
+            options: []
+        };
     }
 
     console.log('Extracted Questions:', questions);
-    return questions;
+    return {questions: questions, title: title};
 }

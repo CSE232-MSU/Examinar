@@ -3,43 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Question Extractor with Navigation</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css" rel="stylesheet"> <!-- Highlight.js CSS -->
+    <title id="main-title">CSE 232 Examiner | </title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.0.279/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script> <!-- Highlight.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script> <!-- js-beautify -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <style>
+        /* Base styles */
+        body {
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Overlay sidebar styles */
+        .overlay-sidebar {
+            position: fixed; /* Fixed position */
+            top: 0; /* Align to the top */
+            left: 0;
+            width: 250px; /* Sidebar width */
+            height: 100vh; /* Full viewport height */
+            background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent background */
+            transition: transform 0.3s ease;
+            transform: translateX(-100%); /* Initially hide the sidebar */
+            z-index: 20; /* On top of other elements */
+        }
+        .overlay-open {
+            transform: translateX(0); /* Show the sidebar */
+        }
+
+        /* Overlay background */
+        .overlay-background {
+            position: fixed; /* Fixed position */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2); /* Dark semi-transparent background */
+            z-index: 10; /* Behind the sidebar */
+            display: none; /* Hidden by default */
+        }
+
+        /* Ensure the main content is properly aligned */
+        .main-content {
+            transition: opacity 0.3s ease; /* Smooth transition for opacity adjustment */
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-<div class="flex flex-1">
+<div class="header bg-white p-4 flex items-center shadow-md fixed w-full top-0 left-0 z-10">
+    <button id="menuButton" class="bg-gray-200 text-black px-4 py-2 rounded mr-4" onclick="toggleSidebar()">Menu</button>
+    <h1 id="title" class="text-xl md:text-3xl font-bold flex-grow text-center">CSE 232 Exam</h1>
+    <button class="home-button bg-blue-500 text-white px-4 py-2 rounded" onclick="goHome()">Home</button>
+</div>
 
-    <!-- Sidebar for navigation -->
-    <div class="w-1/5 bg-white p-4 border-r-2 shadow-lg h-screen flex flex-col overflow-y-auto">
-        <h2 class="text-xl font-semibold mb-4 text-center">Questions</h2>
+<div class="overlay-background" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="flex flex-1 pt-0">
+    <!-- Overlay sidebar for navigation -->
+    <div id="sidebar" class="overlay-sidebar bg-white p-4 border-r-2 shadow-lg flex flex-col overflow-y-auto">
+        <h2 class="text-lg md:text-xl font-semibold mb-4 text-center">Questions</h2>
         <div id="questionNav" class="grid grid-cols-3 gap-4">
             <!-- Navigation buttons will be injected here -->
         </div>
     </div>
 
     <!-- Main content (centered) -->
-    <div class="flex-1 flex justify-center items-center">
-        <div class="max-w-5xl w-full bg-white shadow-md rounded-lg p-8 space-y-6 flex flex-col">
-            <h1 id="title" class="text-3xl font-bold text-center">Question and Answer Checker</h1>
-
-            <div id="questionContainer" class="space-y-4 flex-1 overflow-y-auto max-h-[calc(100vh-200px)]"> <!-- Adjusted for scrollable area -->
-                <h2 id="questionTitle" class="text-xl font-semibold text-gray-800"></h2>
+    <div class="main-content flex-1 flex justify-center items-center">
+        <div class="max-w-5xl w-full bg-white shadow-md rounded-lg p-4 md:p-8 space-y-4 md:space-y-6 flex flex-col">
+            <div id="questionContainer" class="space-y-2 md:space-y-4 flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
+                <h2 id="questionTitle" class="text-lg md:text-xl font-semibold text-gray-800"></h2>
 
                 <div id="optionsContainer" class="space-y-2">
                     <!-- Options will be dynamically injected here -->
                 </div>
 
-                <div class="flex mt-4">
-                    <button id="backButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 mx-1">Back</button>
-                    <button id="checkAnswerButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 mx-1">Check Answer</button>
-                    <button id="nextQuestionButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 mx-1">Next Question</button>
+                <div class="flex flex-col md:flex-row mt-4">
+                    <button id="backButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 mb-2 md:mb-0 md:mr-2">Back</button>
+                    <button id="checkAnswerButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1 mb-2 md:mb-0 md:mr-2">Check Answer</button>
+                    <button id="nextQuestionButton" class="bg-blue-500 text-white px-4 py-2 rounded flex-1">Next Question</button>
                 </div>
 
                 <p id="feedbackMessage" class="mt-4 text-lg font-semibold text-center"></p>
@@ -50,18 +94,32 @@
 
 <script src="main.js"></script>
 <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const isOpen = sidebar.classList.toggle('overlay-open'); // Toggle the open class to show/hide the sidebar
+
+        overlay.style.display = isOpen ? 'block' : 'none'; // Show or hide the overlay background
+        // Optionally, adjust the opacity of the main content
+        document.querySelector('.main-content').style.opacity = isOpen ? '0.2' : '1'; // Dim main content when overlay is open
+    }
+
+    function goHome() {
+        window.location.href = './'; // Adjust the URL to your home page
+    }
+
     (async () => {
-        let params = {}
+        let params = {};
 
         window.location.search.split("?").forEach((val) => {
             let str_params = val.split("&");
             str_params.forEach((element) => {
                 param = element.split("=");
                 if (param.length > 1) {
-                    params[param[0]] = param[1]
+                    params[param[0]] = param[1];
                 }
-            })
-        })
+            });
+        });
 
         if (!params['pdf']) return;
 
@@ -72,13 +130,17 @@
         let pdfAUrl = urlSplit.split(";")[1];
 
         // Extract questions and answers from PDFs
-        let questions = await extractQuestionsFromPDF(pdfQUrl);
+        let {questions, title} = await extractQuestionsFromPDF(pdfQUrl);
         let answers = await extractAnswersFromPDF(pdfAUrl);
+
+        // Set the title of the doc
+        document.getElementById("title").innerText = title;
+        document.getElementById("main-title").innerText += title;
 
         questions.map((value, index) => value.answer = answers[index]);
         const questionAnswerPairs = questions;
 
-        let currentQuestionIndex = params['q'] ? (parseInt(params['q']) - 1) : 0 ;
+        let currentQuestionIndex = params['q'] ? (parseInt(params['q']) - 1) : 0;
         let selectedAnswer = null;
 
         const questionTitle = document.getElementById('questionTitle');
@@ -99,6 +161,7 @@
 
                 button.addEventListener('click', () => {
                     jumpToQuestion(index);
+                    toggleSidebar();
                 });
 
                 // Store the button reference
@@ -120,7 +183,6 @@
                 }
             });
         }
-
 
         function renderQuestion() {
             const currentQuestion = questionAnswerPairs[currentQuestionIndex];
@@ -163,6 +225,11 @@
             updateActiveButton(); // Update the active button when rendering a new question
         }
 
+        function jumpToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion();
+        }
+
         function checkAnswer() {
             const currentQuestion = questionAnswerPairs[currentQuestionIndex];
 
@@ -181,10 +248,6 @@
                 feedbackMessage.classList.add('text-red-500');
                 feedbackMessage.classList.remove('text-green-500');
             }
-        }
-
-        function updateUrlWithQuestionNumber() {
-            window.history.pushState({}, '', `?pdf=${params['pdf']}&q=${currentQuestionIndex + 1}`); // This updates the URL without reloading the page
         }
 
         function nextQuestion() {
@@ -211,20 +274,19 @@
             }
         }
 
-        function jumpToQuestion(index) {
-            currentQuestionIndex = index;
-            selectedAnswer = null; // Reset selected answer when jumping
-            renderQuestion();
-            updateUrlWithQuestionNumber(); // Update URL
+
+        checkAnswerButton.addEventListener('click', checkAnswer);
+        nextQuestionButton.addEventListener('click', nextQuestion);
+        backButton.addEventListener('click', goBack);
+
+        // Function to update the URL with the current question number
+        function updateUrlWithQuestionNumber() {
+            history.pushState({}, '', `?pdf=${params['pdf']}&q=${currentQuestionIndex + 1}`); // This updates the URL without reloading the page
         }
 
         createNavButtons();
         renderQuestion();
-        checkAnswerButton.addEventListener('click', checkAnswer);
-        nextQuestionButton.addEventListener('click', nextQuestion);
-        backButton.addEventListener('click', goBack);
     })();
 </script>
-
 </body>
 </html>
