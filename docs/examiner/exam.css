@@ -1,0 +1,62 @@
+body {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Sidebar overlay for mobile */
+.overlay-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh; /* For mobile */
+    background-color: rgba(255, 255, 255, 0.95);
+    transition: transform 0.3s ease;
+    transform: translateX(-100%);
+    z-index: 20;
+}
+.overlay-open {
+    transform: translateX(0);
+}
+
+/* Overlay background */
+.overlay-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: none;
+}
+
+.main-content {
+    transition: opacity 0.3s ease;
+}
+
+/* Sidebar for larger screens */
+@media (min-width: 768px) {
+    .overlay-sidebar {
+        height: calc(100vh - 64px); /* Adjust height for PC */
+        position: static;
+        transform: translateX(0); /* Always show the sidebar on PC */
+    }
+}
+
+/* Custom scrollbar styles */
+.overlay-sidebar::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.overlay-sidebar::-webkit-scrollbar-track {
+    background: transparent; /* Track color set to transparent */
+}
+
+.overlay-sidebar::-webkit-scrollbar-thumb {
+    background: #888; /* Scrollbar color */
+    border-radius: 10px; /* Rounded corners */
+}
+
+.overlay-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color on hover */
+}
