@@ -149,7 +149,7 @@
         function createNavButtons() {
             questionAnswerPairs.forEach((_, index) => {
                 const button = document.createElement('button');
-                button.classList.add('border', 'border-neutral-400', 'dark:border-neutral-950', 'p-2', 'rounded-md', 'text-center', 'text-black', 'dark:text-neutral-300', 'hover:bg-blue-100', 'dark:hover:dark:bg-blue-950', 'bg-white', 'dark:bg-neutral-900');
+                button.classList.add('border', 'border-neutral-400', 'dark:border-neutral-950', 'p-2', 'rounded-md', 'text-center', 'text-black', 'dark:text-white', 'dark:text-neutral-300', 'hover:bg-blue-100', 'dark:hover:dark:bg-blue-950', 'bg-white', 'dark:bg-neutral-900');
                 button.textContent = index + 1;
 
                 button.addEventListener('click', () => {
@@ -167,9 +167,9 @@
 
         function updateActiveButton() {
             navButtons.forEach((button, index) => {
-                button.classList.remove('bg-blue-500', 'dark:bg-blue-950' , 'text-white');
+                button.classList.remove('bg-blue-500', 'dark:bg-blue-950');
                 if (index === currentQuestionIndex) {
-                    button.classList.add('bg-blue-500', 'dark:bg-blue-950' ,'text-white');
+                    button.classList.add('bg-blue-500', 'dark:bg-blue-950');
                 }
             });
         }
