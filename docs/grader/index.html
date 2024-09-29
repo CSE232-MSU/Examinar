@@ -11,61 +11,91 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* Base styles */
         body {
             overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
-        /* Overlay sidebar styles */
+        /* Sidebar overlay for mobile */
         .overlay-sidebar {
-            position: fixed; /* Fixed position */
-            top: 0; /* Align to the top */
+            position: fixed;
+            top: 0;
             left: 0;
-            width: 250px; /* Sidebar width */
-            height: 100vh; /* Full viewport height */
-            background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent background */
+            width: 250px;
+            height: 100vh; /* For mobile */
+            background-color: rgba(255, 255, 255, 0.95);
             transition: transform 0.3s ease;
-            transform: translateX(-100%); /* Initially hide the sidebar */
-            z-index: 20; /* On top of other elements */
+            transform: translateX(-100%);
+            z-index: 20;
         }
         .overlay-open {
-            transform: translateX(0); /* Show the sidebar */
+            transform: translateX(0);
         }
 
         /* Overlay background */
         .overlay-background {
-            position: fixed; /* Fixed position */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.2); /* Dark semi-transparent background */
-            z-index: 10; /* Behind the sidebar */
-            display: none; /* Hidden by default */
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            display: none;
         }
 
-        /* Ensure the main content is properly aligned */
         .main-content {
-            transition: opacity 0.3s ease; /* Smooth transition for opacity adjustment */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Sidebar for larger screens */
+        @media (min-width: 768px) {
+            .overlay-sidebar {
+                height: calc(100vh - 64px); /* Adjust height for PC */
+                position: static;
+                transform: translateX(0); /* Always show the sidebar on PC */
+            }
+        }
+
+        /* Custom scrollbar styles */
+        .overlay-sidebar::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+        }
+
+        .overlay-sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Track color */
+        }
+
+        .overlay-sidebar::-webkit-scrollbar-thumb {
+            background: #888; /* Scrollbar color */
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .overlay-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker color on hover */
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
-<div class="header bg-white p-4 flex items-center shadow-md fixed w-full top-0 left-0 z-10">
-    <button id="menuButton" class="bg-gray-200 text-black px-4 py-2 rounded mr-4" onclick="toggleSidebar()">Menu</button>
+<div class="header bg-white p-3 flex items-center shadow-md fixed w-full top-0 left-0 z-10">
+    <button id="menuButton" class="bg-gray-200 text-black px-4 py-2 rounded mr-4 block md:hidden" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> <!-- Menu Icon -->
+    </button>
     <h1 id="title" class="text-xl md:text-3xl font-bold flex-grow text-center">CSE 232 Exam</h1>
-    <button class="home-button bg-blue-500 text-white px-4 py-2 rounded" onclick="goHome()">Home</button>
+    <button class="home-button bg-blue-500 text-white px-4 py-2 rounded" onclick="goHome()">
+        <i class="fas fa-home"></i> <!-- Home Icon -->
+    </button>
 </div>
 
 <div class="overlay-background" id="overlay" onclick="toggleSidebar()"></div>
 
-<div class="flex flex-1 pt-0">
-    <!-- Overlay sidebar for navigation -->
-    <div id="sidebar" class="overlay-sidebar bg-white p-4 border-r-2 shadow-lg flex flex-col overflow-y-auto">
+<div class="flex flex-1 pt-16">
+    <!-- Sidebar for larger screens, overlay for mobile -->
+    <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white p-4 border-r-2 shadow-lg overflow-y-auto">
         <h2 class="text-lg md:text-xl font-semibold mb-4 text-center">Questions</h2>
-        <div id="questionNav" class="grid grid-cols-3 gap-4">
+        <div id="questionNav" class="grid grid-cols-3 gap-4 md:grid-cols-3">
             <!-- Navigation buttons will be injected here -->
         </div>
     </div>
@@ -92,29 +122,29 @@
     </div>
 </div>
 
-<script src="main.js"></script>
+<script src="../main.js"></script>
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const isOpen = sidebar.classList.toggle('overlay-open'); // Toggle the open class to show/hide the sidebar
 
-        overlay.style.display = isOpen ? 'block' : 'none'; // Show or hide the overlay background
-        // Optionally, adjust the opacity of the main content
-        document.querySelector('.main-content').style.opacity = isOpen ? '0.2' : '1'; // Dim main content when overlay is open
+        if (window.innerWidth < 768) {
+            const isOpen = sidebar.classList.toggle('overlay-open');
+            overlay.style.display = isOpen ? 'block' : 'none';
+            document.querySelector('.main-content').style.opacity = isOpen ? '0.2' : '1';
+        }
     }
 
     function goHome() {
-        window.location.href = './'; // Adjust the URL to your home page
+        window.location.href = '../'; // Adjust the URL to your home page
     }
 
     (async () => {
         let params = {};
-
         window.location.search.split("?").forEach((val) => {
             let str_params = val.split("&");
             str_params.forEach((element) => {
-                param = element.split("=");
+                let param = element.split("=");
                 if (param.length > 1) {
                     params[param[0]] = param[1];
                 }
@@ -123,17 +153,13 @@
 
         if (!params['pdf']) return;
 
-        urlSplit = atob(params['pdf']);
+        const urlSplit = atob(params['pdf']);
+        const pdfQUrl = urlSplit.split(";")[0];
+        const pdfAUrl = urlSplit.split(";")[1];
 
-        // Sample URLs for questions and answers PDFs
-        let pdfQUrl = urlSplit.split(";")[0];
-        let pdfAUrl = urlSplit.split(";")[1];
+        const { questions, title } = await extractQuestionsFromPDF(pdfQUrl);
+        const answers = await extractAnswersFromPDF(pdfAUrl);
 
-        // Extract questions and answers from PDFs
-        let {questions, title} = await extractQuestionsFromPDF(pdfQUrl);
-        let answers = await extractAnswersFromPDF(pdfAUrl);
-
-        // Set the title of the doc
         document.getElementById("title").innerText = title;
         document.getElementById("main-title").innerText += title;
 
@@ -151,7 +177,7 @@
         const backButton = document.getElementById('backButton');
         const questionNav = document.getElementById('questionNav');
 
-        const navButtons = []; // Store references to navigation buttons
+        const navButtons = [];
 
         function createNavButtons() {
             questionAnswerPairs.forEach((_, index) => {
@@ -161,23 +187,20 @@
 
                 button.addEventListener('click', () => {
                     jumpToQuestion(index);
+                    updateUrlWithQuestionNumber(); // Update URL
                     toggleSidebar();
                 });
 
-                // Store the button reference
                 navButtons.push(button);
                 questionNav.appendChild(button);
             });
 
-            updateActiveButton(); // Initialize the active button on creation
+            updateActiveButton();
         }
 
         function updateActiveButton() {
             navButtons.forEach((button, index) => {
-                // Remove active styles from all buttons
                 button.classList.remove('bg-blue-500', 'text-white');
-
-                // Add active styles to the current question button
                 if (index === currentQuestionIndex) {
                     button.classList.add('bg-blue-500', 'text-white');
                 }
@@ -193,10 +216,9 @@
             // Beautify and highlight code blocks inside the question
             const codeBlocks = questionTitle.querySelectorAll('pre code');
             codeBlocks.forEach((block) => {
-                hljs.highlightElement(block); // Apply syntax highlighting
+                hljs.highlightElement(block);
             });
 
-            // Render the answer options
             optionsContainer.innerHTML = '';
             for (const [key, value] of Object.entries(currentQuestion.options)) {
                 const optionDiv = document.createElement('div');
@@ -214,7 +236,7 @@
 
                 const label = document.createElement('label');
                 label.htmlFor = key;
-                label.innerHTML = marked(value); // Render options using Markdown
+                label.textContent = value;
 
                 optionDiv.appendChild(radioInput);
                 optionDiv.appendChild(label);
@@ -222,7 +244,8 @@
             }
 
             feedbackMessage.textContent = '';
-            updateActiveButton(); // Update the active button when rendering a new question
+            selectedAnswer = null;
+            updateActiveButton();
         }
 
         function jumpToQuestion(index) {
@@ -274,19 +297,19 @@
             }
         }
 
-
-        checkAnswerButton.addEventListener('click', checkAnswer);
-        nextQuestionButton.addEventListener('click', nextQuestion);
-        backButton.addEventListener('click', goBack);
-
         // Function to update the URL with the current question number
         function updateUrlWithQuestionNumber() {
             history.pushState({}, '', `?pdf=${params['pdf']}&q=${currentQuestionIndex + 1}`); // This updates the URL without reloading the page
         }
 
+        checkAnswerButton.addEventListener('click', checkAnswer);
+        nextQuestionButton.addEventListener('click', nextQuestion);
+        backButton.addEventListener('click', goBack);
+
         createNavButtons();
         renderQuestion();
     })();
 </script>
+
 </body>
 </html>
