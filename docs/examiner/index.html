@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
     <link id="highlight-style" rel="stylesheet" href="">
     <link rel="stylesheet" href="exam.css">
 </head>
+
 <body class="bg-neutral-100 min-h-screen flex flex-col">
 
 <div class="header bg-white dark:bg-neutral-950 p-3 flex items-center shadow-lg dark:shadow-neutral-900 fixed w-full top-0 left-0 z-10">
@@ -34,7 +36,6 @@
 </div>
 
 <div class="flex flex-1 pt-16">
-    <!-- Sidebar for larger screens, overlay for mobile -->
     <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white dark:bg-neutral-950 p-4 shadow-lg dark:shadow-neutral-800 overflow-y-auto">
         <h2 class="text-lg md:text-xl font-semibold mb-4 text-center dark:text-neutral-300 text-black">Questions</h2>
         <div id="questionNav" class="grid grid-cols-3 gap-4 md:grid-cols-3">
@@ -45,238 +46,73 @@
     <!-- Main content (centered) -->
     <div class="main-content dark:bg-neutral-950 flex-1 flex justify-center items-center">
         <div class="overlay-background bg-white dark:bg-neutral-950" id="overlay" onclick="toggleSidebar()"></div>
-        <div class="max-w-5xl w-full bg-white dark:bg-neutral-900 shadow-lg dark:shadow-neutral-800 rounded-lg p-4 md:p-8 space-y-4 md:space-y-6 flex flex-col">
-            <div id="questionContainer" class="space-y-2 md:space-y-4 dark:shadow-neutral-800 flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
-                <h2 id="questionTitle" class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-neutral-300"></h2>
+        <div class="max-w-5xl w-full bg-white dark:bg-neutral-900 rounded-lg p-4 md:p-8 space-y-4 md:space-y-6 flex flex-col">
+            <div id="questionContainer" class="flex flex-col space-y-4">
+                <h2 id="questionTitle" class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-neutral-300 border-b-2 border-blue-500 pb-2 mb-4">Question Title</h2>
+            </div>
 
-                <div id="optionsContainer" class="space-y-2">
+            <div class="relative">
+                <div id="scrollUp" class="scroll-arrow hidden absolute top-2 left-0 right-0 text-center text-blue-500 cursor-pointer rounded-full bg-white dark:bg-neutral-800 shadow-md p-2">
+                    <i class="fas fa-chevron-up"></i> <!-- Up Arrow -->
+                </div>
+                <div id="optionsContainer" class="overflow-y-auto max-h-[calc(100vh-20rem)] grid grid-cols-2 gap-4">
                     <!-- Options will be dynamically injected here -->
                 </div>
-
-                <div class="flex flex-col md:flex-row mt-4">
-                    <button id="backButton" class="bg-blue-500 dark:bg-blue-950 text-white px-4 py-2 rounded flex-1 mb-2 md:mb-0 md:mr-2">Back</button>
-                    <button id="checkAnswerButton" class="bg-blue-500 dark:bg-blue-950 text-white px-4 py-2 rounded flex-1 mb-2 md:mb-0 md:mr-2">Check Answer</button>
-                    <button id="nextQuestionButton" class="bg-blue-500 dark:bg-blue-950 text-white px-4 py-2 rounded flex-1">Next Question</button>
+                <div id="scrollDown" class="scroll-arrow hidden absolute bottom-2 left-0 right-0 text-center text-blue-500 cursor-pointer rounded-full bg-white dark:bg-neutral-800 shadow-md p-2">
+                    <i class="fas fa-chevron-down"></i> <!-- Down Arrow -->
                 </div>
-
-                <p id="feedbackMessage" class="mt-4 text-lg font-semibold text-center"></p>
             </div>
+
+            <p id="feedbackMessage" class="mt-4 text-lg font-semibold text-center text-neutral-700"></p>
         </div>
     </div>
 </div>
 
 <script src="../loader.js"></script>
 <script src="parser.js"></script>
+<script src="render.js"></script>
 <script>
-    const toggleButton = document.getElementById('toggle-dark-mode');
-    const styleLink = document.getElementById('highlight-style');
-    const lightIcon = document.getElementById('light-icon');
-    const darkIcon = document.getElementById('dark-icon');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const scrollUpArrow = document.getElementById('scrollUp');
+    const scrollDownArrow = document.getElementById('scrollDown');
 
-    const reloadHighlight = () => {
-        // Save user preference in localStorage
-        if (document.documentElement.classList.contains('dark')) {
-            styleLink.href = 'https://cdn.jsdelivr.net/gh/highlightjs/highlight.js@11.7.0/src/styles/atom-one-dark.css';
-        } else {
-            styleLink.href = 'https://cdn.jsdelivr.net/gh/highlightjs/highlight.js@11.7.0/src/styles/atom-one-light.css';
-        }
-        hljs.highlightAll(); // Re-highlight the code blocks
-    }
+    const updateScrollArrowsVisibility = () => {
+        const scrollTop = optionsContainer.scrollTop;
+        const scrollHeight = optionsContainer.scrollHeight;
+        const clientHeight = optionsContainer.clientHeight;
 
-    reloadHighlight()
-    loadTheme();
+        // Show the up arrow if not scrolled to the top
+        scrollUpArrow.classList.toggle('hidden', scrollTop === 0);
 
-    toggleButton.addEventListener('click', () => {
-        themeActivation();
-        reloadHighlight();
+        // Show the down arrow if there is more content to scroll
+        scrollDownArrow.classList.toggle('hidden', scrollTop + clientHeight >= scrollHeight);
+    };
+
+    // Observe changes in the optionsContainer for children added or removed
+    const observer = new MutationObserver(updateScrollArrowsVisibility);
+    observer.observe(optionsContainer, { childList: true });
+
+    // Event listener for scroll
+    optionsContainer.addEventListener('scroll', updateScrollArrowsVisibility);
+
+    // Event listener for window resize
+    window.addEventListener('resize', updateScrollArrowsVisibility);
+
+    // Scroll down when the down arrow is clicked
+    scrollDownArrow.addEventListener('click', () => {
+        optionsContainer.scrollBy({ top: 100, behavior: 'smooth' }); // Adjust scroll amount as needed
     });
 
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+    // Scroll up when the up arrow is clicked
+    scrollUpArrow.addEventListener('click', () => {
+        optionsContainer.scrollBy({ top: -100, behavior: 'smooth' }); // Adjust scroll amount as needed
+    });
 
-        if (window.innerWidth < 768) {
-            const isOpen = sidebar.classList.toggle('overlay-open');
-            overlay.style.display = isOpen ? 'block' : 'none';
-            document.querySelector('.main-content').style.opacity = isOpen ? '0.2' : '1';
-        }
-    }
-
-    function goHome() {
-        window.location.href = '../'; // Adjust the URL to your home page
-    }
-
-    (async () => {
-        let params = {};
-        window.location.search.split("?").forEach((val) => {
-            let str_params = val.split("&");
-            str_params.forEach((element) => {
-                let param = element.split("=");
-                if (param.length > 1) {
-                    params[param[0]] = param[1];
-                }
-            });
-        });
-
-        if (!params['pdf']) return;
-
-        const urlSplit = atob(params['pdf']);
-        const pdfQUrl = urlSplit.split(";")[0];
-        const pdfAUrl = urlSplit.split(";")[1];
-
-        const { questions, title } = await extractQuestionsFromPDF(pdfQUrl);
-        const answers = await extractAnswersFromPDF(pdfAUrl);
-
-        document.getElementById("title").innerText = title;
-        document.getElementById("main-title").innerText += title;
-
-        questions.map((value, index) => value.answer = answers[index]);
-        const questionAnswerPairs = questions;
-
-        let currentQuestionIndex = params['q'] ? (parseInt(params['q']) - 1) : 0;
-        let selectedAnswer = null;
-
-        const questionTitle = document.getElementById('questionTitle');
-        const optionsContainer = document.getElementById('optionsContainer');
-        const feedbackMessage = document.getElementById('feedbackMessage');
-        const checkAnswerButton = document.getElementById('checkAnswerButton');
-        const nextQuestionButton = document.getElementById('nextQuestionButton');
-        const backButton = document.getElementById('backButton');
-        const questionNav = document.getElementById('questionNav');
-
-        const navButtons = [];
-
-        function createNavButtons() {
-            questionAnswerPairs.forEach((_, index) => {
-                const button = document.createElement('button');
-                button.classList.add('border', 'border-neutral-400', 'dark:border-neutral-950', 'p-2', 'rounded-md', 'text-center', 'text-black', 'dark:text-white', 'dark:text-neutral-300', 'hover:bg-blue-100', 'dark:hover:dark:bg-blue-950', 'bg-white', 'dark:bg-neutral-900');
-                button.textContent = index + 1;
-
-                button.addEventListener('click', () => {
-                    jumpToQuestion(index);
-                    updateUrlWithQuestionNumber(); // Update URL
-                    toggleSidebar();
-                });
-
-                navButtons.push(button);
-                questionNav.appendChild(button);
-            });
-
-            updateActiveButton();
-        }
-
-        function updateActiveButton() {
-            navButtons.forEach((button, index) => {
-                button.classList.remove('bg-blue-500', 'dark:bg-blue-950');
-                if (index === currentQuestionIndex) {
-                    button.classList.add('bg-blue-500', 'dark:bg-blue-950');
-                }
-            });
-        }
-
-        function renderQuestion() {
-            const currentQuestion = questionAnswerPairs[currentQuestionIndex];
-
-            // Render the question in Markdown
-            questionTitle.innerHTML = marked(`\u00A0${currentQuestion.question}`);
-
-            // Beautify and highlight code blocks inside the question
-            const codeBlocks = questionTitle.querySelectorAll('pre code');
-            codeBlocks.forEach((block) => {
-                hljs.highlightElement(block);
-            });
-
-            optionsContainer.innerHTML = '';
-            for (const [key, value] of Object.entries(currentQuestion.options)) {
-                const optionDiv = document.createElement('div');
-                optionDiv.classList.add('flex', 'items-center', 'text-neutral-900', 'dark:text-neutral-300');
-
-                const radioInput = document.createElement('input');
-                radioInput.type = 'radio';
-                radioInput.name = 'answer';
-                radioInput.value = key;
-                radioInput.id = key;
-                radioInput.classList.add('mr-2');
-                radioInput.addEventListener('change', (e) => {
-                    selectedAnswer = value;
-                });
-
-                const label = document.createElement('label');
-                label.htmlFor = key;
-                label.textContent = value;
-
-                optionDiv.appendChild(radioInput);
-                optionDiv.appendChild(label);
-                optionsContainer.appendChild(optionDiv);
-            }
-
-            feedbackMessage.textContent = '';
-            selectedAnswer = null;
-            updateActiveButton();
-        }
-
-        function jumpToQuestion(index) {
-            currentQuestionIndex = index;
-            renderQuestion();
-        }
-
-        function checkAnswer() {
-            const currentQuestion = questionAnswerPairs[currentQuestionIndex];
-
-            if (!selectedAnswer) {
-                feedbackMessage.textContent = 'Please select an answer!';
-                feedbackMessage.classList.add('text-red-500');
-                return;
-            }
-
-            if (selectedAnswer.split(' ', 1)[0] === currentQuestion.answer) {
-                feedbackMessage.textContent = 'Correct!';
-                feedbackMessage.classList.add('text-green-500');
-                feedbackMessage.classList.remove('text-red-500');
-            } else {
-                feedbackMessage.textContent = `Incorrect! The correct answer was ${currentQuestion.answer}.`;
-                feedbackMessage.classList.add('text-red-500');
-                feedbackMessage.classList.remove('text-green-500');
-            }
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questionAnswerPairs.length) {
-                selectedAnswer = null; // Reset selected answer for the next question
-                renderQuestion();
-                updateUrlWithQuestionNumber(); // Update URL
-            } else {
-                feedbackMessage.textContent = 'You have completed all the questions!';
-                feedbackMessage.classList.remove('text-red-500', 'text-green-500');
-                checkAnswerButton.disabled = true;
-                nextQuestionButton.disabled = true;
-                backButton.disabled = true;
-            }
-        }
-
-        function goBack() {
-            currentQuestionIndex--;
-            if (currentQuestionIndex >= 0) {
-                selectedAnswer = null; // Reset selected answer for the previous question
-                renderQuestion();
-                updateUrlWithQuestionNumber(); // Update URL
-            }
-        }
-
-        // Function to update the URL with the current question number
-        function updateUrlWithQuestionNumber() {
-            history.pushState({}, '', `?pdf=${params['pdf']}&q=${currentQuestionIndex + 1}`); // This updates the URL without reloading the page
-        }
-
-        checkAnswerButton.addEventListener('click', checkAnswer);
-        nextQuestionButton.addEventListener('click', nextQuestion);
-        backButton.addEventListener('click', goBack);
-
-        createNavButtons();
-        renderQuestion();
-    })();
+    // Initial check for content visibility and arrow visibility on page load
+    window.onload = () => {
+        updateScrollArrowsVisibility();
+    };
 </script>
-
 </body>
+
 </html>

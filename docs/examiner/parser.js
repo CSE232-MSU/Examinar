@@ -4,15 +4,16 @@ function beautifyCode(code) {
     return js_beautify(code);
 }
 
+// Async fetch function to pull the pdf from a given URL
 async function fetchPDFData(url) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.statusText}`);
     return await response.arrayBuffer(); // Get the PDF data as an ArrayBuffer
 }
 
-function render_page(pageData) {
+// Parsing a page from a given PDF page
+function parsePage(pageData) {
     //check documents https://mozilla.github.io/pdf.js/
-    //ret.text = ret.text ? ret.text : "";
 
     let render_options = {
         //replaces all occurrences of whitespace with standard spaces (0x20). The default value is `false`.
@@ -23,7 +24,6 @@ function render_page(pageData) {
 
     return pageData.getTextContent(render_options)
         .then(function(textContent) {
-            console.log(textContent)
             let lastY, text = '';
             //https://github.com/mozilla/pdf.js/issues/8963
             //https://github.com/mozilla/pdf.js/issues/2140
@@ -62,9 +62,10 @@ async function parsePDF(dataBuffer) {
     const doc = await loadingTask.promise;
     const counter = doc.numPages;
     let text = '';
+
     for (let i = 1; i <= counter; i++) {
         let page = await doc.getPage(i);
-        text += `\n\n${await render_page(page)}`;
+        text += `\n\n${await parsePage(page)}`;
     }
 
     return text;
@@ -116,6 +117,7 @@ async function extractQuestionsFromPDF(url) {
         let trimmedLine = line.trim();
         trimmedLine = trimmedLine.replace(/Version\s+[A-Za-z]\s+Page\s+\d+\s+of\s+\d+/, "")
         trimmedLine = trimmedLine.replace("This page intentionally left blank.", "")
+
         // Question
         if (/^\d+\.\s/.test(trimmedLine)) {
             if (currentType.length > 0) {
@@ -169,6 +171,5 @@ async function extractQuestionsFromPDF(url) {
         };
     }
 
-    console.log('Extracted Questions:', questions);
     return {questions: questions, title: title};
 }
