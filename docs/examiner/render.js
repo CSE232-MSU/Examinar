@@ -39,7 +39,7 @@ function goHome() {
 (async () => {
     let params = {};
     window.location.search.split("?").forEach((val) => {
-        let str_params = val.split("&");
+        let str_params = decodeURIComponent(val).split("&");
         str_params.forEach((element) => {
             let param = element.split("=");
             if (param.length > 1) {
@@ -47,7 +47,7 @@ function goHome() {
             }
         });
     });
-
+    console.table(params)
     if (!params['pdf']) return;
 
     const urlSplit = atob(params['pdf']);
