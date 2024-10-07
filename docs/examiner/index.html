@@ -35,8 +35,8 @@
     </button>
 </div>
 
-<div class="flex flex-1 pt-16">
-    <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white dark:bg-neutral-950 p-4 shadow-lg dark:shadow-neutral-800 overflow-y-auto">
+<div class="flex flex-1 pt-16 bg-gray-100 dark:bg-neutral-950">
+    <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white dark:bg-neutral-950 p-4 dark:shadow-neutral-800 overflow-y-auto">
         <h2 class="text-lg md:text-xl font-semibold mb-4 text-center dark:text-neutral-300 text-black">Questions</h2>
         <div id="questionNav" class="grid grid-cols-3 gap-4 md:grid-cols-3">
             <!-- Navigation buttons will be injected here -->
@@ -44,18 +44,18 @@
     </div>
 
     <!-- Main content (centered) -->
-    <div class="main-content dark:bg-neutral-950 flex-1 flex justify-center items-center">
-        <div class="overlay-background bg-white dark:bg-neutral-950" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="main-content bg-gray-100 dark:bg-neutral-950 flex-1 flex justify-center items-center">
+        <div class="overlay-background bg-gray-100 dark:bg-neutral-950" id="overlay" onclick="toggleSidebar()"></div>
         <div class="max-w-5xl w-full bg-white dark:bg-neutral-900 rounded-lg p-4 md:p-8 space-y-4 md:space-y-6 flex flex-col">
             <div id="questionContainer" class="flex flex-col space-y-4">
                 <h2 id="questionTitle" class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-neutral-300 border-b-2 border-blue-500 pb-2 mb-4">Question Title</h2>
             </div>
 
-            <div class="relative">
+            <div class="relative flex flex-col">
                 <div id="scrollUp" class="scroll-arrow hidden absolute top-2 left-0 right-0 text-center text-blue-500 cursor-pointer rounded-full bg-white dark:bg-neutral-800 shadow-md p-2">
                     <i class="fas fa-chevron-up"></i> <!-- Up Arrow -->
                 </div>
-                <div id="optionsContainer" class="overflow-y-auto max-h-[calc(100vh-20rem)] grid grid-cols-2 gap-4">
+                <div id="optionsContainer" class="overflow-y-auto max-h-[calc(100vh-25rem)] grid grid-cols-2 gap-4">
                     <!-- Options will be dynamically injected here -->
                 </div>
                 <div id="scrollDown" class="scroll-arrow hidden absolute bottom-2 left-0 right-0 text-center text-blue-500 cursor-pointer rounded-full bg-white dark:bg-neutral-800 shadow-md p-2">
@@ -63,7 +63,15 @@
                 </div>
             </div>
 
-            <p id="feedbackMessage" class="mt-4 text-lg font-semibold text-center text-neutral-700"></p>
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-4">
+                <button id="backButton" class="bg-blue-500 dark:bg-blue-950 text-white px-3 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 flex items-center transition duration-300 ease-in-out">
+                    <i class="fas fa-chevron-left mr-1"></i> Back
+                </button>
+                <button id="nextButton" class="bg-blue-500 dark:bg-blue-950 text-white px-3 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 flex items-center transition duration-300 ease-in-out">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -72,46 +80,7 @@
 <script src="parser.js"></script>
 <script src="render.js"></script>
 <script>
-    const optionsContainer = document.getElementById('optionsContainer');
-    const scrollUpArrow = document.getElementById('scrollUp');
-    const scrollDownArrow = document.getElementById('scrollDown');
-
-    const updateScrollArrowsVisibility = () => {
-        const scrollTop = optionsContainer.scrollTop;
-        const scrollHeight = optionsContainer.scrollHeight;
-        const clientHeight = optionsContainer.clientHeight;
-
-        // Show the up arrow if not scrolled to the top
-        scrollUpArrow.classList.toggle('hidden', scrollTop === 0);
-
-        // Show the down arrow if there is more content to scroll
-        scrollDownArrow.classList.toggle('hidden', scrollTop + clientHeight >= scrollHeight);
-    };
-
-    // Observe changes in the optionsContainer for children added or removed
-    const observer = new MutationObserver(updateScrollArrowsVisibility);
-    observer.observe(optionsContainer, { childList: true });
-
-    // Event listener for scroll
-    optionsContainer.addEventListener('scroll', updateScrollArrowsVisibility);
-
-    // Event listener for window resize
-    window.addEventListener('resize', updateScrollArrowsVisibility);
-
-    // Scroll down when the down arrow is clicked
-    scrollDownArrow.addEventListener('click', () => {
-        optionsContainer.scrollBy({ top: 100, behavior: 'smooth' }); // Adjust scroll amount as needed
-    });
-
-    // Scroll up when the up arrow is clicked
-    scrollUpArrow.addEventListener('click', () => {
-        optionsContainer.scrollBy({ top: -100, behavior: 'smooth' }); // Adjust scroll amount as needed
-    });
-
-    // Initial check for content visibility and arrow visibility on page load
-    window.onload = () => {
-        updateScrollArrowsVisibility();
-    };
+    // Your custom JavaScript logic here
 </script>
 </body>
 

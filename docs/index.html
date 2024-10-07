@@ -59,10 +59,10 @@
         // Check if URLs are valid
         if (!pdfQUrl || !pdfAUrl) {
             feedbackMessage.textContent = 'Please enter both URLs.';
-            return;
+
         } else if (!isValidUrl(pdfQUrl) || !isValidUrl(pdfAUrl)) {
             feedbackMessage.textContent = 'Please enter valid URLs.';
-            return;
+
         } else {
             feedbackMessage.textContent = ''; // Clear any previous messages
             window.location.href = `examiner/index.html?pdf=${btoa(pdfQUrl + ";" + pdfAUrl)}`;

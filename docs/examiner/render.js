@@ -47,7 +47,7 @@ function goHome() {
             }
         });
     });
-    console.table(params)
+
     if (!params['pdf']) return;
 
     const urlSplit = atob(params['pdf']);
@@ -68,7 +68,7 @@ function goHome() {
 
     const questionTitle = document.getElementById('questionTitle');
     const optionsContainer = document.getElementById('optionsContainer');
-    const feedbackMessage = document.getElementById('feedbackMessage');
+    // const feedbackMessage = document.getElementById('feedbackMessage');
     const questionNav = document.getElementById('questionNav');
 
     const navButtons = [];
@@ -117,7 +117,6 @@ function goHome() {
 
         optionsContainer.innerHTML = '';
         selectedAnswer = null;
-        feedbackMessage.innerText = '';
 
         for (const [key, value] of Object.entries(currentQuestion.options)) {
             const optionContainer = document.createElement('div');
@@ -131,13 +130,13 @@ function goHome() {
             optionRadio.classList.add('mr-2');
 
             optionRadio.addEventListener('change', () => {
-                selectedAnswer = value;
-                checkAnswer();
+                selectedAnswer = value; // Set the selected answer
+                checkAnswer(optionContainer, currentQuestion); // Call checkAnswer after updating selectedAnswer
             });
 
             optionContainer.onclick = function () {
                 optionRadio.checked = true; // Set the radio button to checked
-                optionRadio.dispatchEvent(new Event('change')); // Trigger the change event
+                optionRadio.dispatchEvent(new Event('change')); // Trigger the change event to check the answer
             }
 
             const optionLabel = document.createElement('label');
@@ -153,17 +152,21 @@ function goHome() {
         updateActiveButton();
     }
 
-    function checkAnswer() {
-        const currentQuestion = questionAnswerPairs[currentQuestionIndex];
+    function checkAnswer(selectedOptionContainer, currentQuestion) {
+        // Check if a selected answer exists
+        if (!selectedAnswer) return;
 
-        if (selectedAnswer.split(' ', 1)[0] === currentQuestion.answer) {
-            feedbackMessage.textContent = 'Correct!';
-            feedbackMessage.classList.add('text-green-500');
-            feedbackMessage.classList.remove('text-red-500');
+        // Assuming the selected answer is compared to the correct answer
+        const isCorrect = selectedAnswer.split(' ', 1)[0] === currentQuestion.answer;
+
+        // Remove existing classes for default background and hover effects
+        selectedOptionContainer.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'dark:bg-blue-800', 'dark:hover:bg-blue-700');
+
+        // Add classes based on whether the answer is correct or incorrect
+        if (isCorrect) {
+            selectedOptionContainer.classList.add('bg-green-200', 'dark:bg-green-600');
         } else {
-            feedbackMessage.textContent = `Incorrect! The correct answer was ${currentQuestion.answer}.`;
-            feedbackMessage.classList.add('text-red-500');
-            feedbackMessage.classList.remove('text-green-500');
+            selectedOptionContainer.classList.add('bg-red-200', 'dark:bg-red-800');
         }
     }
 
@@ -179,6 +182,81 @@ function goHome() {
     }
 
     createNavButtons();
+    // Function to update the state of the navigation buttons
+    function updateNavigationButtons() {
+        const backButton = document.getElementById('backButton');
+        const nextButton = document.getElementById('nextButton');
+        console.log(currentQuestionIndex)
+        // Disable back button if on the first question
+        backButton.disabled = currentQuestionIndex === 0;
+        // Disable next button if on the last question
+        nextButton.disabled = currentQuestionIndex === questionAnswerPairs.length;
+    }
+
+    // Create event listeners for the Back and Next buttons
+    document.getElementById('backButton').addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--; // Move to the previous question
+            renderQuestion(); // Render the new question
+            updateUrlWithQuestionNumber(); // Update URL
+            updateNavigationButtons(); // Update button states
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentQuestionIndex < questionAnswerPairs.length - 1) {
+            currentQuestionIndex++; // Move to the next question
+            renderQuestion(); // Render the new question
+            updateUrlWithQuestionNumber(); // Update URL
+            updateNavigationButtons(); // Update button states
+        }
+    });
+
+    // Call this function initially to set the button states
+    updateNavigationButtons();
+
+    // Render the first question initially
     renderQuestion();
 
 })();
+
+const optionsContainer = document.getElementById('optionsContainer');
+const scrollUpArrow = document.getElementById('scrollUp');
+const scrollDownArrow = document.getElementById('scrollDown');
+
+const updateScrollArrowsVisibility = () => {
+    const scrollTop = optionsContainer.scrollTop;
+    const scrollHeight = optionsContainer.scrollHeight;
+    const clientHeight = optionsContainer.clientHeight;
+
+    // Show the up arrow if not scrolled to the top
+    scrollUpArrow.classList.toggle('hidden', scrollTop === 0);
+
+    // Show the down arrow if there is more content to scroll
+    scrollDownArrow.classList.toggle('hidden', scrollTop + clientHeight >= scrollHeight);
+};
+
+// Observe changes in the optionsContainer for children added or removed
+const observer = new MutationObserver(updateScrollArrowsVisibility);
+observer.observe(optionsContainer, { childList: true });
+
+// Event listener for scroll
+optionsContainer.addEventListener('scroll', updateScrollArrowsVisibility);
+
+// Event listener for window resize
+window.addEventListener('resize', updateScrollArrowsVisibility);
+
+// Scroll down when the down arrow is clicked
+scrollDownArrow.addEventListener('click', () => {
+    optionsContainer.scrollBy({ top: 100, behavior: 'smooth' }); // Adjust scroll amount as needed
+});
+
+// Scroll up when the up arrow is clicked
+scrollUpArrow.addEventListener('click', () => {
+    optionsContainer.scrollBy({ top: -100, behavior: 'smooth' }); // Adjust scroll amount as needed
+});
+
+// Initial check for content visibility and arrow visibility on page load
+window.onload = () => {
+    updateScrollArrowsVisibility();
+};
