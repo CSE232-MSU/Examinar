@@ -9,8 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.0.279/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link id="highlight-style" rel="stylesheet" href="">
@@ -36,7 +36,7 @@
 </div>
 
 <div class="flex flex-1 pt-16 bg-gray-100 dark:bg-neutral-950">
-    <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white dark:bg-neutral-950 p-4 dark:shadow-neutral-800 overflow-y-auto">
+    <div id="sidebar" class="overlay-sidebar md:static md:flex md:flex-col md:w-64 bg-white dark:bg-neutral-950 p-4 dark:shadow-neutral-800 overflow-y-auto md:sticky md:top-16">
         <h2 class="text-lg md:text-xl font-semibold mb-4 text-center dark:text-neutral-300 text-black">Questions</h2>
         <div id="questionNav" class="grid grid-cols-3 gap-4 md:grid-cols-3">
             <!-- Navigation buttons will be injected here -->
@@ -45,7 +45,7 @@
 
     <!-- Main content (centered) -->
     <div class="main-content bg-gray-100 dark:bg-neutral-950 flex-1 flex justify-center items-center">
-        <div class="overlay-background bg-gray-100 dark:bg-neutral-950" id="overlay" onclick="toggleSidebar()"></div>
+        <div class="overlay-background" id="overlay" onclick="toggleSidebar()"></div>
         <div class="max-w-5xl w-full bg-white dark:bg-neutral-900 rounded-lg p-4 md:p-8 space-y-4 md:space-y-6 flex flex-col">
             <div id="questionContainer" class="flex flex-col space-y-4">
                 <h2 id="questionTitle" class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-neutral-300 border-b-2 border-blue-500 pb-2 mb-4">Question Title</h2>

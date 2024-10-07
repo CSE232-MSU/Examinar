@@ -30,6 +30,10 @@ function toggleSidebar() {
         overlay.style.display = isOpen ? 'block' : 'none';
         document.querySelector('.main-content').style.opacity = isOpen ? '0.2' : '1';
     }
+    else {
+        overlay.style.display = 'none';
+        document.querySelector('.main-content').style.opacity = '1';
+    }
 }
 
 function goHome() {
@@ -172,6 +176,7 @@ function goHome() {
 
     function jumpToQuestion(index) {
         currentQuestionIndex = index;
+        updateNavigationButtons();
         renderQuestion();
     }
 
@@ -186,11 +191,12 @@ function goHome() {
     function updateNavigationButtons() {
         const backButton = document.getElementById('backButton');
         const nextButton = document.getElementById('nextButton');
-        console.log(currentQuestionIndex)
-        // Disable back button if on the first question
-        backButton.disabled = currentQuestionIndex === 0;
-        // Disable next button if on the last question
-        nextButton.disabled = currentQuestionIndex === questionAnswerPairs.length;
+
+        // Hide back button if on the first question
+        backButton.style.visibility = currentQuestionIndex === 0 ? 'hidden' : 'visible';
+
+        // Hide next button if on the last question
+        nextButton.style.visibility = currentQuestionIndex === questionAnswerPairs.length - 1 ? 'hidden' : 'visible';
     }
 
     // Create event listeners for the Back and Next buttons
@@ -244,7 +250,10 @@ observer.observe(optionsContainer, { childList: true });
 optionsContainer.addEventListener('scroll', updateScrollArrowsVisibility);
 
 // Event listener for window resize
-window.addEventListener('resize', updateScrollArrowsVisibility);
+window.addEventListener('resize', () => {
+    updateScrollArrowsVisibility()
+    toggleSidebar()
+});
 
 // Scroll down when the down arrow is clicked
 scrollDownArrow.addEventListener('click', () => {
