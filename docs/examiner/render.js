@@ -144,7 +144,7 @@ function goHome() {
             }
 
             const optionLabel = document.createElement('label');
-            optionLabel.classList.add('text-neutral-900', 'dark:text-neutral-300');
+            optionLabel.classList.add('text-neutral-900', 'break-words', 'w-full', 'dark:text-neutral-300');
             optionLabel.setAttribute('for', key);
             optionLabel.textContent = value;
 
