@@ -98,9 +98,16 @@ function goHome() {
 
     function updateActiveButton() {
         navButtons.forEach((button, index) => {
-            button.classList.remove('bg-blue-500', 'dark:bg-blue-950');
+            button.classList.remove('bg-blue-200', 'dark:bg-blue-950');
+
+            // Check if the button does not have either class, then add both classes
+            if (!button.classList.contains("bg-white") || !button.classList.contains("dark:bg-neutral-900")) {
+                button.classList.add("bg-white", "dark:bg-neutral-900");
+            }
+
             if (index === currentQuestionIndex) {
-                button.classList.add('bg-blue-500', 'dark:bg-blue-950');
+                button.classList.remove("bg-white", "dark:bg-neutral-900");
+                button.classList.add('bg-blue-200', 'dark:bg-blue-950');
             }
         });
     }
