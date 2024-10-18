@@ -29,10 +29,11 @@ Allow students to have an efficient and better MCQ practice for CSE 232. Users o
 ### Answer Key PDF
 1. Retrieve the PDF data buffer data from the URL provided by the user
 2. Use pdf.js to render the PDF
-3. Each page that is rendered and checked for a RegEx
-4. Each RegEx match is mapped to their respective questions; this is the answer for each question 
-5. This is compiled into a JSObject with the type ```{[string]: string}```
-6. This JSObject is used to render the correct answer onto the webpage
+3. Each page that is rendered and checked for RegExs
+4. Checks for the sample exam title RegEx
+5. Each answer RegEx match is mapped to their respective questions; this is the answer for each question 
+6. This is compiled into a JSObject with the type ```{[string]: string}```
+7. This JSObject is used to render the correct answer onto the webpage
 
 # Contributors
 
