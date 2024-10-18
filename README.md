@@ -9,7 +9,6 @@
 ## Usage
 
 Allow students to have an efficient and better MCQ practice for CSE 232. Users or students would need to input the questions pdf and the answer key pdf in the respective input fields. This generates the questions with options. All the questions are formatted using MD (Markdown)
-
 ## Get Started
 
 1. Clone the repo
