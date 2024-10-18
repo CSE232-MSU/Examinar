@@ -1,6 +1,6 @@
 <div align="center">
 
-  # CSE 232 Examinar
+  # CSE 232 Examiner
   A tool that converts your typical CSE 232 sample example exams into web-based Q/A format.
 
 </div>
