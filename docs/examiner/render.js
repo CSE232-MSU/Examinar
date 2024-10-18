@@ -257,10 +257,21 @@ observer.observe(optionsContainer, { childList: true });
 optionsContainer.addEventListener('scroll', updateScrollArrowsVisibility);
 
 // Event listener for window resize
+let previousWidth = window.innerWidth;
+
 window.addEventListener('resize', () => {
-    updateScrollArrowsVisibility()
-    toggleSidebar()
+    const currentWidth = window.innerWidth;
+
+    if (currentWidth !== previousWidth) {
+        // Call your functions only when the width changes
+        updateScrollArrowsVisibility();
+        toggleSidebar();
+
+        // Update the previous width to the new value
+        previousWidth = currentWidth;
+    }
 });
+
 
 // Scroll down when the down arrow is clicked
 scrollDownArrow.addEventListener('click', () => {
