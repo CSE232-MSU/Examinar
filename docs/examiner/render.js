@@ -64,7 +64,7 @@ function goHome() {
     document.getElementById("title").innerText = title;
     document.getElementById("main-title").innerText += title;
 
-    questions.map((value, index) => value.answer = answers[index]);
+    questions.map((value, index) => value.answer = answers[index+1]);
     const questionAnswerPairs = questions;
 
     let currentQuestionIndex = params['q'] ? (parseInt(params['q']) - 1) : 0;
@@ -168,7 +168,7 @@ function goHome() {
         if (!selectedAnswer) return;
 
         // Assuming the selected answer is compared to the correct answer
-        const isCorrect = selectedAnswer.split(' ', 1)[0] === currentQuestion.answer;
+        const isCorrect = currentQuestion.answer.includes(selectedAnswer.split(' ', 1)[0].replace(/[()]/g, ""));
 
         // Remove existing classes for default background and hover effects
         selectedOptionContainer.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'dark:bg-blue-800', 'dark:hover:bg-blue-700');
