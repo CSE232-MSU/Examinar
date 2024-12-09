@@ -84,18 +84,32 @@ async function getTitleOfPDF(dataBuffer) {
 
 // Function to extract answers from PDF text
 async function extractAnswersFromPDF(url) {
-    const dataBuffer= await fetchPDFData(url);
-    const text = await parsePDF(dataBuffer)
-    const answers = [];
-    const regex = /\([a-z]\)/g; // Matches answers like (a), (b), etc.
-    const matches = text.match(regex);
+    const dataBuffer = await fetchPDFData(url);
+    const text = await parsePDF(dataBuffer);
 
-    if (matches) {
-        matches.forEach(match => answers.push(match)); // Push each matched answer
+    const questionAnswers = {};
+    const questionRegex = /^(\d+)\s+/gm; // Matches the question number
+    const answerRegex = /\(([a-z](?:[^a-zA-Z0-9\(\)]?[a-z])*)\)/g; // Matches the answers
+
+    let questionMatch;
+    while ((questionMatch = questionRegex.exec(text)) !== null) {
+        const questionNumber = questionMatch[1]; // Extract the question number
+        const startIndex = questionMatch.index; // Start of the question line
+        const endIndex = text.indexOf("\n", startIndex); // End of the question line
+
+        // Extract the corresponding answer(s) from the same line
+        const lineText = text.substring(startIndex, endIndex);
+        const answers = [];
+        let answerMatch;
+        while ((answerMatch = answerRegex.exec(lineText)) !== null) {
+            answers.push(...answerMatch[1].split(",").map(opt => opt.trim())); // Split multiple answers
+        }
+
+        questionAnswers[questionNumber] = answers; // Map the question number to its answers
     }
 
-    //console.log('Extracted Answers:', answers);
-    return answers; // Return the array of answers
+    //console.log('Extracted Answers:', questionAnswers);
+    return questionAnswers; // Return the array of answers
 }
 
 // Function to extract questions from PDF text
